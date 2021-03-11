@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'default_webview_page.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 
 void main() {
   runApp(MyApp());
@@ -55,9 +54,10 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (c) {
-      return DefaultWebViewPage(url:"https://www.baidu.com");
-    }));
+    loadAssets();
+    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (c) {
+    //   return DefaultWebViewPage(url:"https://www.baidu.com");
+    // }));
     // setState(() {
     //   // This call to setState tells the Flutter framework that something has
     //   // changed in this State, which causes it to rerun the build method below
@@ -137,5 +137,40 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+  List<Asset> images = <Asset>[];
+  String _error = 'No Error Dectected';
+
+  Future<void> loadAssets() async {
+    List<Asset> resultList = <Asset>[];
+    String error = 'No Error Detected';
+
+    try {
+      resultList = await MultiImagePicker.pickImages(
+        maxImages: 300,
+        enableCamera: true,
+        selectedAssets: images,
+        cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
+        materialOptions: MaterialOptions(
+          actionBarColor: "#abcdef",
+          actionBarTitle: "Example App",
+          allViewTitle: "All Photos",
+          useDetailsView: false,
+          selectCircleStrokeColor: "#000000",
+        ),
+      );
+    } on Exception catch (e) {
+      error = e.toString();
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      images = resultList;
+      _error = error;
+    });
   }
 }

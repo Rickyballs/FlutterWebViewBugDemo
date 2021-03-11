@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -23,6 +25,13 @@ class _DefaultWebViewPageState extends State<DefaultWebViewPage> {
       body: SafeArea(child: _buildWebView(), bottom: true),
       resizeToAvoidBottomInset: false,
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Enable hybrid composition.
+    if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
   }
 
   AppBar _buildAppBar() {
